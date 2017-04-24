@@ -7,6 +7,6 @@
 #include <stdint.h>
 
 int main(){
-  WinterIsHere_t stark = NULL;
-  stark = WinterIsComing();
+  WinterIsComing();
+  return 0;
 }

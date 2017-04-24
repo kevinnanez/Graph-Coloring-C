@@ -27,17 +27,15 @@ struct _WinterIsHere_t {
 WinterIsHere_t WinterIsComing(){
         WinterSt_t w = calloc(1, sizeof(struct _WinterIsHere_t));
         FILE *archivo;
-        int caracter;
         char ignore[1];
-        uint32_t g[MAXS][MAXS];
-        uint32_t x,y,j,numver,numlad;
+        uint32_t x,y,j,numver,numlad, i, columns, row;
         char line[MAXS] = {0};
         //carga las primeras 3 celdas con el nombre, el color y el grado
         //respectivamente
-        for (int i = 0; i < numver; i++) {
-                g[i][0] = i + 1;
-                g[i][1] = 0;
-                g[i][2] = 0;
+        for (i = 0; i < numver; i++) {
+                (*w).graph[i][0] = i + 1;
+                (*w).graph[i][1] = 0;
+                (*w).graph[i][2] = 0;
         }
         archivo = fopen("archivo.col","r");
         if(archivo == NULL) {
@@ -64,20 +62,20 @@ WinterIsHere_t WinterIsComing(){
                         if(*p == 'c' || !*p) {
                                 continue;
                         } else if(*p == 'p') {
-                                fscanf(archivo,"%s %d %d", ignore, &numver, &numlad);
+                                fscanf(archivo,"%s %u %u", ignore, &numver, &numlad);
                                 (*w).v = numver;
                                 (*w).l = numlad;
                         } else if(*p == 'e') {
-                                fscanf(archivo, "%s %d %d", ignore, &x, &y);
+                                fscanf(archivo, "%s %u %u", ignore, &x, &y);
                                 //aumento el grado del vertice en 1
-                                g[x-1][2]=g[x-1][2]+1;
+                                (*w).graph[x-1][2]=(*w).graph[x-1][2]+1;
                                 //el grado mas 3 para colocar el valor de y en los vecinos de x
-                                j = g[x-1][2]+3;
-                                g[x-1][j]= y;
+                                j = (*w).graph[x-1][2]+3;
+                                (*w).graph[x-1][j]= y;
 
-                                g[y-1][2]=g[y-1][2]+1;
-                                j = g[y-1][2] + 3;
-                                g[y-1][j]= x;
+                                (*w).graph[y-1][2]=(*w).graph[y-1][2]+1;
+                                j = (*w).graph[y-1][2] + 3;
+                                (*w).graph[y-1][j]= x;
 
                         } else {
                                 printf("archivo invalido\n");
@@ -87,12 +85,11 @@ WinterIsHere_t WinterIsComing(){
 
         }
         fclose(archivo);
-        (*w).graph = g;
-        for(int row = 0; row < numver; row++){
-          for(int columns = 0; columns < numver; columns++){
-            printf("%d", g[row][columns]);
+        for(row = 0; row < numver; row++){
+          for(columns = 0; columns < numver; columns++){
+            printf("%d", (*w).graph[row][columns]);
           }
           printf("\n");
         }
-        return w;
+        return 0;
 }
