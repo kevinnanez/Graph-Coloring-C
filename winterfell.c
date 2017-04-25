@@ -6,14 +6,15 @@
 #include "JonSnow.h"
 #include <stdint.h>
 #include <string.h>
+#include <inttypes.h>
 
 #define MAXS 10000
 //Create the WinterSt structure, which contains all the information of the
 //given graph.
 struct _WinterSt_t {
-        uint32_t v;
-        uint32_t l;
-        uint32_t graph[MAXS][MAXS];
+        int32_t v;
+        int32_t l;
+        int32_t graph[MAXS][MAXS];
 };
 
 //Create a pointer to a Winterst structure.
@@ -27,8 +28,9 @@ struct _WinterIsHere_t {
 WinterIsHere_t WinterIsComing(){
         WinterSt_t w = calloc(1, sizeof(struct _WinterIsHere_t));
         FILE *archivo;
-        char ignore[1];
-        uint32_t x,y,j,numver,numlad, i, columns, row;
+        char ignore[1],ignore2[4];
+        int comment = 1;
+        int32_t x,y,j,numver,numlad, i, columns, row;
         char line[MAXS] = {0};
         //carga las primeras 3 celdas con el nombre, el color y el grado
         //respectivamente
@@ -59,23 +61,26 @@ WinterIsHere_t WinterIsComing(){
                         while(isspace(*p))  //advance to first non-whitespace
                                 p++;
                         //skip lines beginning with '#' or '@' or blank lines
-                        if(*p == 'c' || !*p) {
+                        if(*p == 'c') {
+                                printf("Comment %d\n", comment++);
                                 continue;
                         } else if(*p == 'p') {
-                                fscanf(archivo,"%s %u %u", ignore, &numver, &numlad);
+                                fscanf(archivo,"%s %s %"PRId32" %"PRId32"", ignore, ignore2, &numver, &numlad);
+                                printf("numver= %"PRIu32" namlad = %"PRIu32"\n", numver, numlad);
                                 (*w).v = numver;
                                 (*w).l = numlad;
                         } else if(*p == 'e') {
-                                fscanf(archivo, "%s %u %u", ignore, &x, &y);
+                                fscanf(archivo, "%s %"PRId32" %"PRId32"", ignore, &x, &y);
                                 //aumento el grado del vertice en 1
-                                (*w).graph[x-1][2]=(*w).graph[x-1][2]+1;
+                                printf("x=%u y=%u\n", x, y);
+                                (*w).graph[x][2]=(*w).graph[x][2]+1;
                                 //el grado mas 3 para colocar el valor de y en los vecinos de x
-                                j = (*w).graph[x-1][2]+3;
-                                (*w).graph[x-1][j]= y;
+                                j = (*w).graph[x][2]+3;
+                                (*w).graph[x][j]= y;
 
-                                (*w).graph[y-1][2]=(*w).graph[y-1][2]+1;
-                                j = (*w).graph[y-1][2] + 3;
-                                (*w).graph[y-1][j]= x;
+                                (*w).graph[y][2]=(*w).graph[y][2]+1;
+                                j = (*w).graph[y][2] + 3;
+                                (*w).graph[y][j]= x;
 
                         } else {
                                 printf("archivo invalido\n");

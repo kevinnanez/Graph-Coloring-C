@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "JonSnow.h"
 #include <stdint.h>
+#include <inttypes.h>
 
 int main(){
   WinterIsComing();

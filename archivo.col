@@ -1,5 +1,9 @@
 c hola
-p edge 100 4950
+c xd
+c ejemplo
+c 123
+c abc
+p edge 200 4950
 e 0 1
 e 0 2
 e 0 3
