@@ -28,17 +28,12 @@ struct _WinterIsHere_t {
 WinterIsHere_t WinterIsComing(){
         WinterSt_t w = calloc(1, sizeof(struct _WinterIsHere_t));
         FILE *archivo;
-        char ignore[1],ignore2[4];
+        //char ignore[1]; //,ignore2[4];
         int comment = 1;
+        int flag = 1;
         int32_t x,y,j,numver,numlad, i, columns, row;
         char line[MAXS] = {0};
-        //carga las primeras 3 celdas con el nombre, el color y el grado
-        //respectivamente
-        for (i = 0; i < numver; i++) {
-                (*w).graph[i][0] = i + 1;
-                (*w).graph[i][1] = 0;
-                (*w).graph[i][2] = 0;
-        }
+
         archivo = fopen("archivo.col","r");
         if(archivo == NULL) {
                 printf("\nError de apertura del archivo\n\n");
@@ -53,6 +48,7 @@ WinterIsHere_t WinterIsComing(){
                 //(3) handling/removing the '\n' at the end of each line included by fgets.
                 while (fgets(line,MAXS,archivo) != NULL) {
                         char *p = line;
+                        char * aux;
                         size_t len = strlen(line);
 
                         while(len > 0 && (line[len-1] == '\n' || line[len-1] == '\r'))
@@ -65,12 +61,40 @@ WinterIsHere_t WinterIsComing(){
                                 printf("Comment %d\n", comment++);
                                 continue;
                         } else if(*p == 'p') {
-                                fscanf(archivo,"%s %s %"PRId32" %"PRId32"", ignore, ignore2, &numver, &numlad);
-                                printf("numver= %"PRIu32" namlad = %"PRIu32"\n", numver, numlad);
+                                printf("%s\n", p);
+                                //parto el string de la linea con el espacio como delimitador
+                                aux = strtok(line, " ");
+                                while(aux != NULL) {
+                                        if(flag == 3) {
+                                                //en el tercer espacio castear el string en int32_t
+                                                numver = (int32_t)strtol(aux, &aux, 10);
+                                        }
+                                        if(flag == 4) {
+                                                //en el cuarto espacio castear
+                                                numlad = (int32_t)strtol(aux, &aux, 10);
+                                        }
+                                        aux = strtok(NULL, " ");
+                                        flag++;
+                                }
+
+                                printf("numver= %" PRIu32 " numlad = %" PRIu32 "\n", numver, numlad);
                                 (*w).v = numver;
                                 (*w).l = numlad;
+
                         } else if(*p == 'e') {
-                                fscanf(archivo, "%s %"PRId32" %"PRId32"", ignore, &x, &y);
+                                aux = strtok(line, " ");
+                                flag = 1;
+                                while(aux != NULL) {
+                                  if(flag == 2) {
+                                    x = (int32_t)strtol(aux,&aux,10);
+                                  }
+                                  if(flag == 3) {
+                                    y = (int32_t)strtol(aux,&aux,10);
+                                  }
+                                  aux = strtok(NULL, " ");
+                                  flag++;
+                                }
+                                //fscanf(archivo, "%s %" PRId32 " %" PRId32 "", ignore, &x, &y);
                                 //aumento el grado del vertice en 1
                                 printf("x=%u y=%u\n", x, y);
                                 (*w).graph[x][2]=(*w).graph[x][2]+1;
@@ -87,14 +111,21 @@ WinterIsHere_t WinterIsComing(){
                                 exit(1);
                         }
                 }
+                //carga las primeras 3 celdas con el nombre, el color y el grado
+                //respectivamente
+                for (i = 0; i < numver; i++) {
+                        (*w).graph[i][0] = i + 1;
+                        (*w).graph[i][1] = 0;
+                        (*w).graph[i][2] = 0;
+                }
 
         }
         fclose(archivo);
-        for(row = 0; row < numver; row++){
-          for(columns = 0; columns < numver; columns++){
-            printf("%d", (*w).graph[row][columns]);
-          }
-          printf("\n");
+        for(row = 0; row < numver; row++) {
+                for(columns = 0; columns < numver; columns++) {
+                        printf("%d", (*w).graph[row][columns]);
+                }
+                printf("\n");
         }
         return 0;
 }
