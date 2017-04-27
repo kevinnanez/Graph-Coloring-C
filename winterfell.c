@@ -14,7 +14,7 @@
 struct _WinterSt_t {
         int32_t v;
         int32_t l;
-        int32_t graph[MAXS][MAXS];
+        int32_t **graph;
 };
 
 //Create a pointer to a Winterst structure.
@@ -26,21 +26,19 @@ struct _WinterIsHere_t {
 //alloc memory, start the WinterSt structure, read a graph in DIMACS format.
 //load the information from it and return a pointer to it.
 WinterIsHere_t WinterIsComing(){
-        WinterSt_t w = calloc(1, sizeof(struct _WinterIsHere_t));
+        WinterIsHere_t winter = calloc(1, sizeof(struct _WinterIsHere_t));
+        WinterSt_t w = calloc(1, sizeof(struct _WinterSt_t));
         FILE *archivo;
-        //char ignore[1]; //,ignore2[4];
         int comment = 1;
         int flag = 1;
-        int32_t x,y,j,numver,numlad, i, columns, row;
+        int32_t x,y,numver,numlad, i,j, columns, row, notfound,verticei;
         char line[MAXS] = {0};
-
         archivo = fopen("archivo.col","r");
         if(archivo == NULL) {
                 printf("\nError de apertura del archivo\n\n");
                 exit(1);
         }
         //Mientras no se llegue al final del fichero
-        //(caracter = fgetc(archivo)) != EOF
         while (!feof(archivo)) {
                 //(1) finding the first non-whitespace character in the line to test,
                 //(2) what to do with blank lines (it looks like you just want the data,
@@ -76,56 +74,109 @@ WinterIsHere_t WinterIsComing(){
                                         aux = strtok(NULL, " ");
                                         flag++;
                                 }
-
-                                printf("numver= %" PRIu32 " numlad = %" PRIu32 "\n", numver, numlad);
                                 (*w).v = numver;
                                 (*w).l = numlad;
+                                w->graph = (int32_t **)malloc(numver * sizeof(int32_t *));
+                                for(i = 0; i < numver; i++)
+                                        (*w).graph[i] = (int32_t *)malloc(numver+2 * sizeof(int));
+                                //carga las primeras 3 celdas con el nombre, el color y el grado
+                                //respectivamente
+                                for (i = 0; i < numver; i++) {
+                                        (*w).graph[i][0] = 0;
+                                        (*w).graph[i][1] = 0;
+                                        (*w).graph[i][2] = 0;
+                                }
 
                         } else if(*p == 'e') {
                                 aux = strtok(line, " ");
                                 flag = 1;
+                                notfound = 0;
+                                verticei = 0;
+                                i = 0;
+                                j = 0;
                                 while(aux != NULL) {
-                                  if(flag == 2) {
-                                    x = (int32_t)strtol(aux,&aux,10);
-                                  }
-                                  if(flag == 3) {
-                                    y = (int32_t)strtol(aux,&aux,10);
-                                  }
-                                  aux = strtok(NULL, " ");
-                                  flag++;
+                                        if(flag == 2) {
+                                                x = (int32_t)strtol(aux,&aux,10);
+                                        }
+                                        if(flag == 3) {
+                                                y = (int32_t)strtol(aux,&aux,10);
+                                        }
+                                        aux = strtok(NULL, " ");
+                                        flag++;
                                 }
-                                //fscanf(archivo, "%s %" PRId32 " %" PRId32 "", ignore, &x, &y);
-                                //aumento el grado del vertice en 1
                                 printf("x=%u y=%u\n", x, y);
-                                (*w).graph[x][2]=(*w).graph[x][2]+1;
-                                //el grado mas 3 para colocar el valor de y en los vecinos de x
-                                j = (*w).graph[x][2]+3;
-                                (*w).graph[x][j]= y;
+                                //busca el indice si el vertice ya está guardado
+                                while(i < numver && x != (*w).graph[i][0]) {
+                                        i++;
+                                        if(i == numver) {
+                                                notfound = 1;
+                                        }
+                                }
+                                //si llega al numero de vertices entonces no lo encontro
 
-                                (*w).graph[y][2]=(*w).graph[y][2]+1;
-                                j = (*w).graph[y][2] + 3;
-                                (*w).graph[y][j]= x;
+                                if(notfound){
+                                        //agrego el vertice nuevo
+                                        while((*w).graph[j][0] != 0) {
+                                                j++;
+                                        }
+                                        verticei = j;
+
+                                } else {
+                                        //encontrado
+                                        verticei = i;
+                                }
+                                //primera celda el nombre del vertice
+                                (*w).graph[verticei][0] = x;
+                                //segunda celda el numero de vecinos
+                                (*w).graph[verticei][1] = (*w).graph[verticei][1] + 1;
+                                //agregar vecino a un vertice, numero de vecinos +3 para ignorar las primeras 3 celdas
+                                (*w).graph[verticei][(*w).graph[verticei][1]+2] = y;
+                                //lo mismo pero con y
+                                i=0;
+                                j=0;
+                                notfound = 0;
+                                while(i < numver && y != (*w).graph[i][0]) {
+                                        i++;
+                                        if(i == numver)
+                                                notfound = 1;
+                                }
+                                if(notfound) {
+                                        while((*w).graph[j][0] != 0) {
+                                                j++;
+                                        }
+                                        verticei = j;
+                                } else {
+                                        verticei = i;
+                                }
+                                (*w).graph[verticei][0] = y;
+                                (*w).graph[verticei][1] = (*w).graph[verticei][1] + 1;
+                                (*w).graph[verticei][(*w).graph[verticei][1]+2] = x;
 
                         } else {
                                 printf("archivo invalido\n");
                                 exit(1);
                         }
                 }
-                //carga las primeras 3 celdas con el nombre, el color y el grado
-                //respectivamente
-                for (i = 0; i < numver; i++) {
-                        (*w).graph[i][0] = i + 1;
-                        (*w).graph[i][1] = 0;
-                        (*w).graph[i][2] = 0;
-                }
+
 
         }
         fclose(archivo);
+        //para ver si se agregaron bien los valores
         for(row = 0; row < numver; row++) {
-                for(columns = 0; columns < numver; columns++) {
-                        printf("%d", (*w).graph[row][columns]);
+                for(columns = 0; columns < numver + 2; columns++) {
+                        printf("%d ", (*w).graph[row][columns]);
                 }
                 printf("\n");
         }
-        return 0;
+        winter->WinterSt = &w;
+        return winter;
+}
+
+int Primavera(WinterIsHere_t w){
+  WinterSt_t grafo = *w->WinterSt;
+  int32_t **tabla = grafo->graph;
+  free(tabla);
+  free(grafo);
+  free(w);
+  return 1;
 }

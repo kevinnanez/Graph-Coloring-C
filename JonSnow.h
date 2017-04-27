@@ -11,4 +11,5 @@ typedef struct _WinterSt_t *WinterSt_t;
 typedef uint32_t *u32;
 
 WinterIsHere_t WinterIsComing(void);
+int Primavera(WinterIsHere_t w);
 #endif

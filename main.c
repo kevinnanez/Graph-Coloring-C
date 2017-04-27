@@ -8,6 +8,7 @@
 #include <inttypes.h>
 
 int main(){
-  WinterIsComing();
+  WinterIsHere_t dragon = WinterIsComing();
+  Primavera(dragon);
   return 0;
 }
