@@ -114,7 +114,7 @@ WinterIsHere_t WinterIsComing(){
                                 }
                                 //si llega al numero de vertices entonces no lo encontro
 
-                                if(notfound){
+                                if(notfound) {
                                         //agrego el vertice nuevo
                                         while((*w).graph[j][0] != 0) {
                                                 j++;
@@ -173,10 +173,100 @@ WinterIsHere_t WinterIsComing(){
 }
 
 int Primavera(WinterIsHere_t w){
-  WinterSt_t grafo = *w->WinterSt;
-  int32_t **tabla = grafo->graph;
-  free(tabla);
-  free(grafo);
-  free(w);
-  return 1;
+        WinterSt_t grafo = *w->WinterSt;
+        int32_t **tabla = grafo->graph;
+        free(tabla);
+        free(grafo);
+        free(w);
+        return 1;
+}
+
+//devuelve el numero de vertices de w
+int32_t NumeroDeVertices(WinterIsHere_t w){
+        WinterSt_t walker = *w->WinterSt;
+        return walker->v;
+}
+//Devuelve el numero de lados de w
+int32_t NumeroDeLados(WinterIsHere_t w){
+        WinterSt_t walker = *w->WinterSt;
+        return walker->l;
+}
+//Devuelve el numero de vertices de color i
+
+int32_t NumeroVerticesDeColor(WinterIsHere_t w, int32_t i){
+        WinterSt_t walker = *w->WinterSt;
+        int32_t j = 0;
+        int32_t k = 0;
+        while(k < walker->v) {
+                if(walker->graph[k][2] == i) {
+                        j++;
+                }
+                k++;
+        }
+        return j;
+}
+
+//devuelve la cantidad de colores usados en el coloreo de W
+int32_t NumeroDeColores(WinterIsHere_t w){
+        WinterSt_t walker = *w->WinterSt;
+        int32_t j = 0;
+        int32_t i = 0;
+        while(i < walker->v) {
+                if(walker->graph[i][2] > j) {
+                        j = walker->graph[i][2];
+                }
+                i++;
+        }
+        return j;
+}
+
+//devuelve la etiqueta del vertice numero i
+int32_t IesimoVerticeEnElOrden(WinterIsHere_t w, int32_t i){
+        WinterSt_t walker = *w->WinterSt;
+        int32_t k = 0;
+        while(k < walker->v) {
+                if(i == walker->graph[k][0]) {
+                        break;
+                }
+                k++;
+        }
+        return k;
+}
+
+//devuelve el nombre real del vertice cuya etiqueta es x
+int32_t NombreDelVertice(WinterIsHere_t w, int32_t x){
+        WinterSt_t walker = *w->WinterSt;
+        return walker->graph[x][0];
+}
+
+//devuelve el color con el que esta coloreado el vertice x
+
+int32_t ColorDelVertice(WinterIsHere_t w, int32_t x){
+        WinterSt_t walker = *w->WinterSt;
+        return walker->graph[x][2];
+}
+
+//devuelve el grado del vertice x
+
+int32_t GradoDelVertice(WinterIsHere_t w, int32_t x){
+        WinterSt_t walker = *w->WinterSt;
+        return walker->graph[x][1];
+}
+
+//devuelve la etiqueta del vecino numero i del vertice x
+
+int32_t IesimoVecino(WinterIsHere_t w, int32_t x, int32_t i){
+        WinterSt_t walker = *w->WinterSt;
+        return walker->graph[x][i+2];
+}
+
+int32_t Greedy(WinterIsHere_t w){
+        int32_t chromatic = 0;
+        WinterSt_t walker = *w->WinterSt;
+        walker->graph[0][2] = 1;
+
+        for(int i = 0; i < walker->v; i++) {
+          
+        }
+        return 0;
 }
