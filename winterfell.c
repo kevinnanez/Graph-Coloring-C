@@ -485,7 +485,7 @@ int32_t max ( int32_t *list, int32_t r){
     int32_t i ;
     int32_t j = 0;
     int32_t max = 0;
-    for(i = 0; i++; i <= r+1){
+    for(i = 0; i <= r+1;i++){
         if(list[i] > max){
             max = list[i];
             j = i;
@@ -514,7 +514,7 @@ void RordenManteniendoBloqueColores(WinterIsHere_t w, int32_t x){
         //armamos bloques con colores = 1, 2 .. r-1
         i = current + 1;
         while(j < r && i <= v){
-            for(i ; i++; i <= v){
+            for( ; i <= v;i++){
                 if(walker->graph[i][1] != j){
                     i++;
                 } else{
@@ -539,7 +539,7 @@ void RordenManteniendoBloqueColores(WinterIsHere_t w, int32_t x){
         i = current + 1;
         j = r - 1;
         while(j > 1 && i <= v){
-            for(i ; i++; i <= v){
+            for( ; i <= v;i++){
                 if(walker->graph[i][1] != j){
                     i++;
                 } else{
@@ -554,13 +554,13 @@ void RordenManteniendoBloqueColores(WinterIsHere_t w, int32_t x){
     } else if(x == 2){
         //calculamos cuantos vertices hay para cada color
         int32_t cantvert[r+1];
-        for(i = 1; i++; i <= r){
+        for(i = 1; i <= r; i++){
             cantvert[i] = NumeroVerticesDeColor(w, i);
         }
         //buscamos el color con mas vertices
         j = max(cantvert, r);
         while(j!= 0 && i <= v){
-            for(i; i++; i <= v){
+            for(; i <= v; i++){
                 if(walker->graph[j][1] != j){
                     i++;
                 } else{
@@ -575,7 +575,7 @@ void RordenManteniendoBloqueColores(WinterIsHere_t w, int32_t x){
     } else if(x == 3){
         //calculamos cuantos vertices hay para cada color
         int32_t cantvert[r+1];
-        for(i = 1; i++; i <= r){
+        for(i = 1;i <= r;  i++){
             cantvert[i] = NumeroVerticesDeColor(w, i);
         }
         //buscamos el color con mas vertices
@@ -583,7 +583,7 @@ void RordenManteniendoBloqueColores(WinterIsHere_t w, int32_t x){
         i = v;
         current = v;
         while(j != 0 && i > 0){
-            for(i; i--; i = 0){
+            for(; i = 0; i--){
                 if(walker->graph[j][1] != j){
                     i--;
                 } else{
