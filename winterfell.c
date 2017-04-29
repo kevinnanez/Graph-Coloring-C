@@ -260,13 +260,100 @@ int32_t IesimoVecino(WinterIsHere_t w, int32_t x, int32_t i){
         return walker->graph[x][i+2];
 }
 
-int32_t Greedy(WinterIsHere_t w){
-        int32_t chromatic = 0;
-        WinterSt_t walker = *w->WinterSt;
-        walker->graph[0][2] = 1;
-
-        for(int i = 0; i < walker->v; i++) {
-          
+bool arraysearch(int32_t array[],int32_t size, int32_t t){
+        bool flag = false;
+        for(int i = 0; i < (int)size; i++) {
+                if(array[i] == t) {
+                        flag = true;
+                        break;
+                }
         }
-        return 0;
+        return flag;
+}
+
+int32_t Greedy(WinterIsHere_t w){
+        int32_t chromatic = 1;
+        int k, m;
+        WinterSt_t walker = *w->WinterSt;
+        int32_t array[walker->v];
+        memset(array, 0, (walker->v)*(walker->v)*sizeof(int32_t));
+        walker->graph[0][2] = 1;
+        //por cada vertice
+        for(int i = 1; i < (int)walker->v; i++) {
+                m = 0;
+                //nos fijamos en sus vecinos, y por cada vecino
+                for(int j = 3; j < ((int)walker->graph[i][1]+2); j++) {
+                        //los colores de los vecinos menores al vertice se agregan a un arreglo
+                        if(walker->graph[i][j] < walker->graph[i][0]) {
+                                for(int l = 0; l < walker->v; l++) {
+                                    if(walker->graph[l][0] == walker->graph[i][j]){
+                                        array[m] = walker->graph[l][2];
+                                        m++;
+                                        break;
+                                      }
+                                }
+                        }
+                }
+                //aca buscamos el menor entero que no esta en el arreglo
+                //desde 2 porque ya hay 1 color.
+                for(k = 2; k < walker->v; k++) {
+                        if(!arraysearch(array, walker->v, k)) {
+                                //si no esta el color k, el nuevo color es k
+                                walker->graph[i][2] = k;
+                                break;
+                        }
+                }
+                if(chromatic < k) {
+                        chromatic = k;
+                }
+        }
+
+        return chromatic;
+}
+
+int Bipartito(WinterIsHere_t w){
+
+        int32_t chromatic = 1;
+        int k, m;
+        WinterSt_t walker = *w->WinterSt;
+        int32_t array[walker->v];
+        memset(array, 0, (walker->v)*(walker->v)*sizeof(int32_t));
+        walker->graph[0][2] = 1;
+        //por cada vertice
+        for(int i = 1; i < (int)walker->v; i++) {
+                m = 0;
+                //nos fijamos en sus vecinos, y por cada vecino
+                for(int j = 3; j < ((int)walker->graph[i][1]+2); j++) {
+                        //los colores de los vecinos menores al vertice se agregan a un arreglo
+                        if(walker->graph[i][j] < walker->graph[i][0]) {
+                                for(int l = 0; l < walker->v; l++) {
+                                    if(walker->graph[l][0] == walker->graph[i][j]){
+                                        array[m] = walker->graph[l][2];
+                                        m++;
+                                        break;
+                                      }
+                                }
+                        }
+                }
+                //aca buscamos el menor entero que no esta en el arreglo
+                //desde 2 porque ya hay 1 color.
+                for(k = 2; k < walker->v; k++) {
+                        if(!arraysearch(array, walker->v, k)) {
+                                //si no esta el color k, el nuevo color es k
+                                walker->graph[i][2] = k;
+                                break;
+                        }
+                }
+                if(chromatic < k) {
+                        chromatic = k;
+                }
+                if(chromatic > 2) {
+                  return 0;
+                }
+        }
+        if(chromatic != 2){
+          return 0;
+        } else {
+          return 1;
+        }
 }

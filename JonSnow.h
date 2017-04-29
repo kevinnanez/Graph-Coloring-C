@@ -21,5 +21,7 @@ int32_t NombreDelVertice(WinterIsHere_t w, int32_t x);
 int32_t ColorDelVertice(WinterIsHere_t w, int32_t x);
 int32_t GradoDelVertice(WinterIsHere_t w, int32_t x);
 int32_t IesimoVecino(WinterIsHere_t w, int32_t x, int32_t i);
+int32_t Greedy(WinterIsHere_t w);
+int Bipartito(WinterIsHere_t w);
 
 #endif

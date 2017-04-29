@@ -9,7 +9,7 @@
 
 int main(){
   WinterIsHere_t dragon = WinterIsComing();
-  int32_t test = NombreDelVertice(dragon, 2);
+  int32_t test = Bipartito(dragon);
   int aux = (int)test;
   printf("%d",aux);
   Primavera(dragon);
