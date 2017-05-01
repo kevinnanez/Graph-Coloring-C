@@ -9,20 +9,6 @@
 #include <inttypes.h>
 
 #define MAXS 10000
-//Create the WinterSt structure, which contains all the information of the
-//given graph.
-struct _WinterSt_t {
-        uint32_t v;
-        uint32_t l;
-        uint32_t **graph;
-};
-
-//Create a pointer to a Winterst structure.
-struct _WinterIsHere_t {
-        WinterSt_t *WinterSt;
-};
-
-
 //alloc memory, start the WinterSt structure, read a graph in DIMACS format.
 //load the information from it and return a pointer to it.
 WinterIsHere_t WinterIsComing(){
@@ -31,7 +17,7 @@ WinterIsHere_t WinterIsComing(){
         FILE *archivo;
         int comment = 1;
         int flag = 1;
-        uint32_t x,y,numver,numlad, i,j, columns, row, found,verticei;
+        uint32_t x,y,numver,numlad, i,j, found,verticei;
         uint32_t guardado = 1;
         char line[MAXS] = {0};
         archivo = fopen("archivo.col","r");
@@ -78,8 +64,9 @@ WinterIsHere_t WinterIsComing(){
                                 (*w).v = numver;
                                 (*w).l = numlad;
                                 w->graph = (uint32_t **)malloc(numver * sizeof(uint32_t *));
-                                for(i = 0; i < numver; i++)
+                                for(i = 0; i < numver; i++) {
                                         (*w).graph[i] = (uint32_t *)malloc(numver+2 * sizeof(int));
+                                }
                                 //carga las primeras 3 celdas con el nombre, el color y el grado
                                 //respectivamente
                                 for (i = 0; i < numver; i++) {
@@ -165,24 +152,36 @@ WinterIsHere_t WinterIsComing(){
                                 exit(1);
                         }
 
-                }printf("\n");
+                } printf("\n");
 
 
         }
         fclose(archivo);
         //para ver si se agregaron bien los valores
-        printf("Tabla de adyacencia:\n");
-        for(row = 0; row < numver; row++) {
+        /*printf("Tabla de adyacencia:\n");
+           for(row = 0; row < numver; row++) {
                 for(columns = 0; columns < numver + 1; columns++) {
                         printf("%d ", (*w).graph[row][columns]);
                 }
                 printf("\n");
-        }
-        printf("\n");
+           }
+           printf("\n");*/
         winter->WinterSt = &w;
         return winter;
 }
-
+//imprime tabla
+void printable(WinterIsHere_t w){
+        WinterSt_t walker = *w->WinterSt;
+        printf("Tabla de adyacencia:\n");
+        for(uint32_t row = 0; row < walker->v; row++) {
+                for(uint32_t columns = 0; columns < walker->graph[row][1] + 3; columns++) {
+                        printf("%d ", walker->graph[row][columns]);
+                }
+                printf("\n");
+        }
+        printf("\n");
+}
+//Destruye el grafo
 int Primavera(WinterIsHere_t w){
         WinterSt_t grafo = *w->WinterSt;
         uint32_t **tabla = grafo->graph;
@@ -191,7 +190,6 @@ int Primavera(WinterIsHere_t w){
         free(w);
         return 1;
 }
-
 //devuelve el numero de vertices de w
 uint32_t NumeroDeVertices(WinterIsHere_t w){
         WinterSt_t walker = *w->WinterSt;
@@ -203,7 +201,6 @@ uint32_t NumeroDeLados(WinterIsHere_t w){
         return walker->l;
 }
 //Devuelve el numero de vertices de color i
-
 uint32_t NumeroVerticesDeColor(WinterIsHere_t w, uint32_t i){
         WinterSt_t walker = *w->WinterSt;
         uint32_t j = 0;
@@ -216,7 +213,6 @@ uint32_t NumeroVerticesDeColor(WinterIsHere_t w, uint32_t i){
         }
         return j;
 }
-
 //devuelve la cantidad de colores usados en el coloreo de W
 uint32_t NumeroDeColores(WinterIsHere_t w){
         WinterSt_t walker = *w->WinterSt;
@@ -230,7 +226,6 @@ uint32_t NumeroDeColores(WinterIsHere_t w){
         }
         return j;
 }
-
 //devuelve la etiqueta del vertice numero i
 uint32_t IesimoVerticeEnElOrden(WinterIsHere_t w, uint32_t i){
         WinterSt_t walker = *w->WinterSt;
@@ -243,34 +238,27 @@ uint32_t IesimoVerticeEnElOrden(WinterIsHere_t w, uint32_t i){
         }
         return k;
 }
-
 //devuelve el nombre real del vertice cuya etiqueta es x
 uint32_t NombreDelVertice(WinterIsHere_t w, uint32_t x){
         WinterSt_t walker = *w->WinterSt;
         return walker->graph[x][0];
 }
-
 //devuelve el color con el que esta coloreado el vertice x
-
 uint32_t ColorDelVertice(WinterIsHere_t w, uint32_t x){
         WinterSt_t walker = *w->WinterSt;
         return walker->graph[x][2];
 }
-
 //devuelve el grado del vertice x
-
 uint32_t GradoDelVertice(WinterIsHere_t w, uint32_t x){
         WinterSt_t walker = *w->WinterSt;
         return walker->graph[x][1];
 }
-
 //devuelve la etiqueta del vecino numero i del vertice x
-
 uint32_t IesimoVecino(WinterIsHere_t w, uint32_t x, uint32_t i){
         WinterSt_t walker = *w->WinterSt;
         return walker->graph[x][i+2];
 }
-
+//busca t en el arreglo
 bool arraysearch(uint32_t array[],uint32_t size, uint32_t t){
         bool flag = false;
         for(int i = 0; i < (int)size; i++) {
@@ -281,12 +269,12 @@ bool arraysearch(uint32_t array[],uint32_t size, uint32_t t){
         }
         return flag;
 }
-
+//coloreo greedy
 uint32_t Greedy(WinterIsHere_t w){
 
         WinterSt_t walker = *w->WinterSt;
         uint32_t chromatic = 1;
-        int m;
+        int m,vecinos;
         uint32_t k;
         walker->graph[0][2] = 1;
         uint32_t array[walker->v];
@@ -296,23 +284,28 @@ uint32_t Greedy(WinterIsHere_t w){
         for(int i = 1; i < (int)walker->v; i++) {
                 m = 0;
                 //nos fijamos en sus vecinos, y por cada vecino
-                for(int j = 3; j < ((int)walker->graph[i][1]+2); j++) {
+                vecinos = (int)walker->graph[i][1]+3;
+                for(int j = 3; j < vecinos; j++) {
                         //los colores de los vecinos menores al vertice se agregan a un arreglo
-                        if(walker->graph[i][j] < walker->graph[i][0]) {
-                                for(uint32_t l = 0; l < walker->v; l++) {
-                                        if(walker->graph[l][0] == walker->graph[i][j]) {
-                                                array[m] = walker->graph[l][2];
-                                                m++;
-                                        }
+                        //if(walker->graph[i][j] < walker->graph[i][0]) {
+                        //busco el color del vecino
+                        for(uint32_t l = 0; l < walker->v; l++) {
+                                if(walker->graph[l][0] == walker->graph[i][j]) {
+                                        array[m] = walker->graph[l][2];
+                                        m++;
+                                        break;
                                 }
                         }
                 }
                 //aca buscamos el menor entero que no esta en el arreglo
                 for(k = 1; k < walker->v; k++) {
-                        if(!arraysearch(array, walker->v, k)) {
+                        if(!arraysearch(array, walker->v - 1, k)) {
                                 //si no esta el color k, el nuevo color es k
                                 walker->graph[i][2] = k;
                                 break;
+                        }
+                        if(k == walker->v-1) {
+                                walker->graph[i][2] = k + 1;
                         }
                 }
                 if(chromatic < k) {
@@ -322,13 +315,12 @@ uint32_t Greedy(WinterIsHere_t w){
 
         return chromatic;
 }
-
+//coloreo bipartito
 int Bipartito(WinterIsHere_t w){
-
 
         WinterSt_t walker = *w->WinterSt;
         uint32_t chromatic = 1;
-        int m;
+        int m,vecinos;
         uint32_t k;
         walker->graph[0][2] = 1;
         uint32_t array[walker->v];
@@ -338,23 +330,29 @@ int Bipartito(WinterIsHere_t w){
         for(int i = 1; i < (int)walker->v; i++) {
                 m = 0;
                 //nos fijamos en sus vecinos, y por cada vecino
-                for(int j = 3; j < ((int)walker->graph[i][1]+2); j++) {
+                vecinos = (int)walker->graph[i][1]+3;
+                for(int j = 3; j < vecinos; j++) {
                         //los colores de los vecinos menores al vertice se agregan a un arreglo
                         if(walker->graph[i][j] < walker->graph[i][0]) {
+                                //busco el color del vecino
                                 for(uint32_t l = 0; l < walker->v; l++) {
                                         if(walker->graph[l][0] == walker->graph[i][j]) {
                                                 array[m] = walker->graph[l][2];
                                                 m++;
+                                                break;
                                         }
                                 }
                         }
                 }
                 //aca buscamos el menor entero que no esta en el arreglo
                 for(k = 1; k < walker->v; k++) {
-                        if(!arraysearch(array, walker->v, k)) {
+                        if(!arraysearch(array, walker->v - 1, k)) {
                                 //si no esta el color k, el nuevo color es k
                                 walker->graph[i][2] = k;
                                 break;
+                        }
+                        if(k == walker->v-1) {
+                                walker->graph[i][2] = k + 1;
                         }
                 }
                 if(chromatic < k) {
@@ -370,130 +368,175 @@ int Bipartito(WinterIsHere_t w){
                 return 1;
         }
 }
-
-void CambiarDatos(WinterIsHere_t w, uint32_t a, uint32_t b){
-        WinterSt_t walker = *w->WinterSt;
-        //variables auxiliares y temporales
-        WinterSt_t temp = *w->WinterSt;
-        uint32_t auxnom, auxcol, auxgrad;
-
-        auxnom = walker->graph[a][0];
-        auxcol = walker->graph[a][1];
-        auxgrad = walker->graph[a][2];
-
-        /*while ( <=auxgrad){
-           //copiar los vecinos de izq
-           }*/
-
-        walker->graph[a][0] = temp->graph[b][0];
-        walker->graph[a][1] = temp->graph[b][1];
-        walker->graph[a][2] = temp->graph[b][2];
-
-        /*for(){
-           //copiar vecinos de der a izq y borrar? vecinos de a si tiene mas que der
-           }*/
-
-        walker->graph[b][0] = auxnom;
-        walker->graph[b][1] = auxcol;
-        walker->graph[b][2] = auxgrad;
-
-        /*while ( <=auxgrad){
-           //copiar los vecinos aux a der y borrar? vecinos de der si tenia mas que aux
-           }*/
+//swap de arreglos
+void CambiarDatos(uint32_t **a, uint32_t **b){
+        uint32_t *tmp = *a;
+        *a = *b;
+        *b = tmp;
 }
-
-void QuickSort(WinterIsHere_t w, uint32_t a, uint32_t b){
+//quick sort
+uint32_t pivot(WinterIsHere_t w,  uint32_t left,  uint32_t right){
         WinterSt_t walker = *w->WinterSt;
-        uint32_t izq, der, pivote;
-        uint32_t i = a;
-        uint32_t j = b;
+        uint32_t piv = left;
 
-        izq = walker->graph[i][0];
-        der = walker->graph[j][0];
-        //elejimos el pivote al medio
-        pivote = walker->graph[(i+j)/2][0];
-        //ordena de menor a mayor
-        while (i<=j) {
-                while(izq<pivote && i<b) {
+        uint32_t i = left+1;
+        uint32_t j = right;
+
+        while(i<=j)
+        {
+                if(walker->graph[i][0] <= walker->graph[piv][0])
+                {
                         i++;
-                        izq= walker->graph[i][0];
                 }
-
-                while(pivote<der && j>izq) {
-                        j--;
-                        der = walker->graph[j][0];
-                }
-
-                if(izq<=der) {
-                        CambiarDatos(w, izq, der);
-                        izq++;
-                        der--;
+                else
+                {
+                        if(walker->graph[j][0] > walker->graph[piv][0])
+                        {
+                                j--;
+                        }
+                        else
+                        {
+                                CambiarDatos(&walker->graph[i],&walker->graph[j]);
+                                i++;
+                                j--;
+                        }
                 }
         }
-
-        if(a<der) {
-                QuickSort(w,a,der);
+        if(piv!=j)
+        {
+                CambiarDatos(&walker->graph[piv],&walker->graph[j]);
+                piv = j;
         }
-
-        if(b>izq) {
-                QuickSort(w,izq,b);
+        return piv;
+}
+void recursive_quick_sort(WinterIsHere_t w, int left, int right){
+        uint32_t piv;
+        if(right>left)
+        {
+                piv = pivot(w,left,right);
+                recursive_quick_sort(w,left,((int)piv)-1);
+                recursive_quick_sort(w,((int)piv)+1,right);
         }
 }
-
+void QuickSort(WinterIsHere_t w, uint32_t length){
+        if(length>2)
+        {
+                recursive_quick_sort(w,0,(length)-1);
+        }
+}
 void OrdenNatural(WinterIsHere_t w){
         WinterSt_t walker = *w->WinterSt;
-        QuickSort(w,0,walker->v);
+        QuickSort(w,walker->v);
 }
-
-void WelshPowell(WinterIsHere_t w, uint32_t a, uint32_t b){
+//WelshPowell
+uint32_t pivotwelsh(WinterIsHere_t w,  uint32_t left,  uint32_t right){
         WinterSt_t walker = *w->WinterSt;
-        uint32_t izq, der, pivote;
-        uint32_t i = a;
-        uint32_t j = b;
+        uint32_t piv = left;
 
-        izq = walker->graph[i][2];
-        der = walker->graph[j][2];
-        //elejimos el pivote al medio
-        pivote = walker->graph[(i+j)/2][2];
-        //como el QuickSort pero de mayor a menor
-        while (i<=j) {
-                while(izq>pivote && i<b) {
+        uint32_t i = left+1;
+        uint32_t j = right;
+
+        while(i<=j)
+        {
+                if(walker->graph[i][1] > walker->graph[piv][1])
+                {
                         i++;
-                        izq= walker->graph[i][2];
                 }
-
-                while(pivote>der && j>izq) {
-                        j--;
-                        der = walker->graph[j][2];
-                }
-
-                if(izq>der) {
-                        CambiarDatos(w, izq, der);
-                        izq++;
-                        der--;
+                else
+                {
+                        if(walker->graph[j][1] <= walker->graph[piv][1])
+                        {
+                                j--;
+                        }
+                        else
+                        {
+                                CambiarDatos(&walker->graph[i],&walker->graph[j]);
+                                i++;
+                                j--;
+                        }
                 }
         }
-
-        if(a<der) {
-                WelshPowell(w,a,der);
+        if(piv!=j)
+        {
+                CambiarDatos(&walker->graph[piv],&walker->graph[j]);
+                piv = j;
         }
-
-        if(b>izq) {
-                WelshPowell(w,izq,b);
+        return piv;
+}
+void recursive_quick_sort_welsh(WinterIsHere_t w, int left, int right){
+        uint32_t piv;
+        if(right>left)
+        {
+                piv = pivotwelsh(w,left,right);
+                recursive_quick_sort_welsh(w,left,((int)piv)-1);
+                recursive_quick_sort_welsh(w,((int)piv)+1,right);
         }
 }
-
+void WelshPowell(WinterIsHere_t w, uint32_t length){
+        if(length>2)
+        {
+                recursive_quick_sort_welsh(w,0,(length)-1);
+        }
+}
 void OrdenWelshPowell(WinterIsHere_t w){
         WinterSt_t walker = *w->WinterSt;
-        WelshPowell(w, 0, walker->v);
+        WelshPowell(w, walker->v);
 }
+//orden decreciente de colores
+uint32_t pivotcolores(WinterIsHere_t w,  uint32_t left,  uint32_t right){
+        WinterSt_t walker = *w->WinterSt;
+        uint32_t piv = left;
 
+        uint32_t i = left+1;
+        uint32_t j = right;
+
+        while(i<=j)
+        {
+                if(walker->graph[i][2] > walker->graph[piv][2])
+                {
+                        i++;
+                }
+                else
+                {
+                        if(walker->graph[j][2] <= walker->graph[piv][2])
+                        {
+                                j--;
+                        }
+                        else
+                        {
+                                CambiarDatos(&walker->graph[i],&walker->graph[j]);
+                                i++;
+                                j--;
+                        }
+                }
+        }
+        if(piv!=j)
+        {
+                CambiarDatos(&walker->graph[piv],&walker->graph[j]);
+                piv = j;
+        }
+        return piv;
+}
+void recursive_quick_sort_colores(WinterIsHere_t w, int left, int right){
+        uint32_t piv;
+        if(right>left)
+        {
+                piv = pivotcolores(w,left,right);
+                recursive_quick_sort_colores(w,left,((int)piv)-1);
+                recursive_quick_sort_colores(w,((int)piv)+1,right);
+        }
+}
+//Aleatorizar con semilla x
 void AleatorizarVertices(WinterIsHere_t w, uint32_t x){
-        OrdenWelshPowell(w);
-        //inserte codigo xD
-        x++;
+        //x es la semilla
+        srand(x);
+        WinterSt_t walker = *w->WinterSt;
+        for(int i = walker->v-1; i > 0; i--) {
+                int j = rand() % (i+1);
+                CambiarDatos(&walker->graph[i], &walker->graph[j]);
+        }
 }
-
+//Maximo de un arreglo
 uint32_t max ( uint32_t *list, uint32_t r){
         uint32_t i;
         uint32_t j = 0;
@@ -506,107 +549,77 @@ uint32_t max ( uint32_t *list, uint32_t r){
         }
         return j;
 }
-void RordenManteniendoBloqueColores(WinterIsHere_t w, uint32_t x){
+void ReordenManteniendoBloqueColores(WinterIsHere_t w, uint32_t x){
         WinterSt_t walker = *w->WinterSt;
         uint32_t r = NumeroDeColores(w);
         uint32_t i = 0;
         uint32_t current = 0;
         uint32_t j = 1;
         uint32_t v = NumeroDeVertices(w);
-
-        if(x == 0) {
-                //agrupamos los de color r
-                while(i <= v) {
-                        if(walker->graph[i][1] != r) {
-                                i++;
-                        } else{
-                                current++;
-                                CambiarDatos(w, i, current);
-                        }
-                }
-                //armamos bloques con colores = 1, 2 .. r-1
-                i = current + 1;
-                while(j < r && i <= v) {
-                        for(; i <= v; i++) {
-                                if(walker->graph[i][1] != j) {
+        if(r != 1) {
+                if(x == 0) {
+                        //agrupamos los de color r
+                        while(i < v) {
+                                if(walker->graph[i][1] != r) {
                                         i++;
                                 } else{
+                                        CambiarDatos(&walker->graph[i], &walker->graph[current]);
                                         current++;
-                                        CambiarDatos(w, i, current);
                                 }
                         }
-                        j++;
-                        i = current +1;
-                }
-        } else if(x == 1) {
-                //agrupamos primero los de color r
-                while(i <= v) {
-                        if(walker->graph[i][1] != r) {
-                                i++;
-                        } else{
-                                current++;
-                                CambiarDatos(w, i, current);
+                        //armamos bloques con colores = 1, 2 .. r-1
+                        if((r-current)>2) {
+                                recursive_quick_sort(w, current, r);
                         }
-                }
-                //armamos bloques r-1, r-2...1
-                i = current + 1;
-                j = r - 1;
-                while(j > 1 && i <= v) {
-                        for(; i <= v; i++) {
-                                if(walker->graph[i][1] != j) {
-                                        i++;
-                                } else{
-                                        current++;
-                                        CambiarDatos(w, i, current);
-                                }
+                } else if(x == 1) {
+                        if(r > 2){
+                          recursive_quick_sort_colores(w, 0, r-1);
                         }
-                        j--;
-                        i = current +1;
-                }
-
-        } else if(x == 2) {
-                //calculamos cuantos vertices hay para cada color
-                uint32_t cantvert[r+1];
-                for(i = 1; i <= r; i++) {
-                        cantvert[i] = NumeroVerticesDeColor(w, i);
-                }
-                //buscamos el color con mas vertices
-                j = max(cantvert, r);
-                while(j!= 0 && i <= v) {
-                        for(; i <= v; i++) {
-                                if(walker->graph[j][1] != j) {
-                                        i++;
-                                } else{
-                                        current++;
-                                        CambiarDatos(w, i, current);
-                                }
+                } else if(x == 2) {
+                        //calculamos cuantos vertices hay para cada color
+                        uint32_t cantvert[r+1];
+                        for(i = 1; i <= r; i++) {
+                                cantvert[i] = NumeroVerticesDeColor(w, i);
                         }
-                        cantvert[j] = 0;
+                        //buscamos el color con mas vertices
                         j = max(cantvert, r);
-                }
+                        while(j!= 0 && i <= v) {
+                                for(; i <= v; i++) {
+                                        if(walker->graph[j][1] != j) {
+                                                i++;
+                                        } else{
+                                                current++;
+                                                CambiarDatos(&walker->graph[i], &walker->graph[current]);
+                                        }
+                                }
+                                cantvert[j] = 0;
+                                j = max(cantvert, r);
+                        }
 
-        } else if(x == 3) {
-                //calculamos cuantos vertices hay para cada color
-                uint32_t cantvert[r+1];
-                for(i = 1; i <= r; i++) {
-                        cantvert[i] = NumeroVerticesDeColor(w, i);
-                }
-                //buscamos el color con mas vertices
-                j = max(cantvert, r);
-                i = v;
-                current = v;
-                while(j != 0 && i > 0) {
-                        for(; i == 0; i--) {
-                                if(walker->graph[j][1] != j) {
-                                        i--;
-                                } else{
-                                        current--;
-                                        CambiarDatos(w, i, current);
+                } else if(x == 3) {
+                        //calculamos cuantos vertices hay para cada color
+                        uint32_t cantvert[r+1];
+                        for(i = 1; i <= r; i++) {
+                                cantvert[i] = NumeroVerticesDeColor(w, i);
+                        }
+                        //buscamos el color con mas vertices
+                        j = max(cantvert, r);
+                        i = v;
+                        current = v;
+                        while(j != 0 && i > 0) {
+                                for(; i == 0; i--) {
+                                        if(walker->graph[j][1] != j) {
+                                                i--;
+                                        } else{
+                                                current--;
+                                                CambiarDatos(&walker->graph[i], &walker->graph[current]);
+                                        }
                                 }
                         }
+                } else{
+                        //AleatorizarVertices(w,x);
+                        OrdenWelshPowell(w);
+
                 }
-        } else{
-                //AleatorizarVertices(w,x);
-                OrdenWelshPowell(w);
         }
 }
