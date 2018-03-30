@@ -3,38 +3,38 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <assert.h>
-#include "JonSnow.h"
+#include "TheOutsider.h"
 #include <stdint.h>
 #include <inttypes.h>
 
 int main(){
         printf("\n");
-        WinterIsHere_t dragon = WinterIsComing();
+        Grafo_t graph = ConstruccionDelGrafo();
         printf("Tabla ingresada:\n" );
-        printable(dragon);
+        printable(graph);
         uint32_t c = 1;
         uint32_t i = 10;
-        WinterSt_t walker = *dragon->WinterSt;
-        int greedy = (int)Greedy(dragon);
-        printf("greedy:\n" );
-        printable(dragon);
-        int bipartito = Bipartito(dragon);
-        int vertices = (int)NumeroDeVertices(dragon);
-        int lados = (int)NumeroDeLados(dragon);
-        int verticescolor = (int)NumeroVerticesDeColor(dragon, c);
-        int colores = (int)NumeroDeColores(dragon);
-        int ivertice = (int)IesimoVerticeEnElOrden(dragon, i);
-        int nombre = (int)NombreDelVertice(dragon, c);
-        int color = (int)ColorDelVertice(dragon, c);
-        int grado = (int)GradoDelVertice(dragon, c);
-        int ivecino = (int)IesimoVecino(dragon, c, c);
+        GrafoSt_t pointer = *graph->GrafoSt;
+        int greedy = (int)NotSoGreedy(graph, 512);
+        printf("NotSogreedy:\n" );
+        printable(graph);
+        int bipartito = Bipartito(graph);
+        int vertices = (int)NumeroDeVertices(graph);
+        int lados = (int)NumeroDeLados(graph);
+        int verticescolor = (int)NumeroVerticesDeColor(graph, c);
+        int colores = (int)NumeroDeColores(graph);
+        int ivertice = (int)IesimoVerticeEnElOrden(graph, i);
+        int nombre = (int)NombreDelVertice(graph, c);
+        int color = (int)ColorDelVertice(graph, c);
+        int grado = (int)GradoDelVertice(graph, c);
+        int ivecino = (int)IesimoVecino(graph, c, c);
 
         printf("Greedy = %d\n",greedy);
         printf("Bipartito = %s\n", bipartito == 1 ? "Si" : "No");
 
         printf("Numero de vertices = %d\n", vertices);
         printf("Numero de lados = %d\n", lados);
-        printf("Numero de vertices de color = %d\n", verticescolor);
+        printf("Numero de vertices de color 1 = %d\n", verticescolor);
         printf("Numero de colores = %d\n", colores);
         printf("Indice del vertice = %d\n", ivertice);
         printf("Nombre del vertice = %d\n", nombre);
@@ -43,26 +43,43 @@ int main(){
         printf("Indice del vecino = %d\n", ivecino);
 
         printf("\n");
-        CambiarDatos(&walker->graph[0], &walker->graph[1]);
+        CambiarDatos(&pointer->graph[0], &pointer->graph[1]);
         printf("swap:\n");
-        printable(dragon);
+        printable(graph);
         printf("\n");
-        QuickSort(dragon,vertices);
+        QuickSort(graph,vertices);
         printf("QuickSort\n");
-        printable(dragon);
-        OrdenWelshPowell(dragon);
+        printable(graph);
+        OrdenWelshPowell(graph);
         printf("WelshPowell\n");
-        printable(dragon);
-        AleatorizarVertices(dragon, 2);
+        printable(graph);
+        AleatorizarVertices(graph, 23);
         printf("Aleatorizar vertices\n");
-        printable(dragon);
-        ReordenManteniendoBloqueColores(dragon, 0);
+        printable(graph);
+        ReordenManteniendoBloqueColores(graph, 0);
         printf("r 1 2 ... r-1\n");
-        printable(dragon);
-        ReordenManteniendoBloqueColores(dragon, 1);
+        printable(graph);
+        ReordenManteniendoBloqueColores(graph, 1);
         printf("r r-1 ... 2 1\n");
-        printable(dragon);
+        printable(graph);
+        ReordenManteniendoBloqueColores(graph, 2);
+        printf("|c1|<|c2|<...<|cr|\n");
+        printable(graph);
+        ReordenManteniendoBloqueColores(graph, 3);
+        printf("|c1|>|c2|>...>|cr|\n");
+        printable(graph);
         printf("\n");
-        Primavera(dragon);
+        ReordenManteniendoBloqueColores(graph, 4);
+        printf("colores aleatorios 4\n");
+        printable(graph);
+        printf("\n");
+        ReordenManteniendoBloqueColores(graph, 5);
+        printf("colores aleatorios 5\n");
+        printable(graph);
+        printf("\n");
+        ReordenManteniendoBloqueColores(graph, 6);
+        printf("colores aleatorios 6\n");
+        printable(graph);
+        printf("\n");
         return 0;
 }
