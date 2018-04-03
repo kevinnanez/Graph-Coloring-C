@@ -13,7 +13,6 @@ int main(){
         printf("Tabla ingresada:\n" );
         printable(graph);
         uint32_t c = 1;
-        uint32_t i = 10;
         GrafoSt_t pointer = *graph->GrafoSt;
         int greedy = (int)NotSoGreedy(graph, 512);
         printf("NotSogreedy:\n" );
@@ -21,27 +20,23 @@ int main(){
         int bipartito = Bipartito(graph);
         int vertices = (int)NumeroDeVertices(graph);
         int lados = (int)NumeroDeLados(graph);
-        int verticescolor = (int)NumeroVerticesDeColor(graph, c);
         int colores = (int)NumeroDeColores(graph);
-        int ivertice = (int)IesimoVerticeEnElOrden(graph, i);
         int nombre = (int)NombreDelVertice(graph, c);
         int color = (int)ColorDelVertice(graph, c);
         int grado = (int)GradoDelVertice(graph, c);
-        int ivecino = (int)IesimoVecino(graph, c, c);
-
+        int colorjota = (int)ColorJotaesimoVecino(graph, c, c);
+        int nombrejota = (int)NombreJotaesimoVecino(graph, c, c);
         printf("Greedy = %d\n",greedy);
-        printf("Bipartito = %s\n", bipartito == 1 ? "Si" : "No");
+        printf("Bipartito = %d\n",bipartito);
 
         printf("Numero de vertices = %d\n", vertices);
         printf("Numero de lados = %d\n", lados);
-        printf("Numero de vertices de color 1 = %d\n", verticescolor);
         printf("Numero de colores = %d\n", colores);
-        printf("Indice del vertice = %d\n", ivertice);
         printf("Nombre del vertice = %d\n", nombre);
         printf("Color del vertice = %d\n", color);
         printf("Grado del vertice = %d\n", grado);
-        printf("Indice del vecino = %d\n", ivecino);
-
+        printf("Color primer vecino = %d\n", colorjota);
+        printf("Nombre primer vecino = %d\n", nombrejota);
         printf("\n");
         CambiarDatos(&pointer->graph[0], &pointer->graph[1]);
         printf("swap:\n");
@@ -57,16 +52,16 @@ int main(){
         printf("Aleatorizar vertices\n");
         printable(graph);
         ReordenManteniendoBloqueColores(graph, 0);
-        printf("r 1 2 ... r-1\n");
-        printable(graph);
-        ReordenManteniendoBloqueColores(graph, 1);
         printf("r r-1 ... 2 1\n");
         printable(graph);
-        ReordenManteniendoBloqueColores(graph, 2);
+        ReordenManteniendoBloqueColores(graph, 1);
         printf("|c1|<|c2|<...<|cr|\n");
         printable(graph);
+        ReordenManteniendoBloqueColores(graph, 2);
+        printf("colores aleatorios 2\n");
+        printable(graph);
         ReordenManteniendoBloqueColores(graph, 3);
-        printf("|c1|>|c2|>...>|cr|\n");
+        printf("colores aleatorios 3\n");
         printable(graph);
         printf("\n");
         ReordenManteniendoBloqueColores(graph, 4);
