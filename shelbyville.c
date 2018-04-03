@@ -57,7 +57,7 @@ uint32_t NotSoGreedy(Grafo_t w, uint32_t x){
         uint32_t chromatic = 1; //cantidad de colores del grafo
         int m,vecinos;
         pointer->graph[0][2] = 1; //el primer vertice obviamente tendra color 1
-         //areglo que guarda los colores de los vecinos
+        //areglo que guarda los colores de los vecinos
 
         //For each vertex
         //por cada vertice
@@ -66,8 +66,8 @@ uint32_t NotSoGreedy(Grafo_t w, uint32_t x){
                 int flanders[chromatic+1];
                 //we look at his neighbours; and for each neighbour
                 //miramos sus vecinos y por cada vecino
-                for(uint32_t init = 0; init < chromatic+1; init++){
-                  flanders[init] = 0;
+                for(uint32_t init = 0; init < chromatic+1; init++) {
+                        flanders[init] = 0;
                 }
                 vecinos = (int)pointer->graph[i][1]+3;
                 for(int j = 3; j < vecinos; j++) {
@@ -77,96 +77,79 @@ uint32_t NotSoGreedy(Grafo_t w, uint32_t x){
                         //busco el color del vecino
 
                         if(pointer->graph[i][j] < pointer->graph[i][0]) {
-                          for(uint32_t l = 0; l < pointer->v; l++) {
+                                for(uint32_t l = 0; l < pointer->v; l++) {
 
-                                  if(pointer->graph[l][0] == pointer->graph[i][j]) {
-                                          flanders[pointer->graph[l][2]] = 1;
-                                          break; //no va haber vertices repetidos
-                                  }
-                          }
+                                        if(pointer->graph[l][0] == pointer->graph[i][j]) {
+                                                flanders[pointer->graph[l][2]] = 1;
+                                                break; //no va haber vertices repetidos
+                                        }
+                                }
                         }
                 }
-                int chrome[chromatic];//colores disponibles
-                for(uint32_t init = 0; init < chromatic; init++){
-                  chrome[init] = 0;
+                int chrome[chromatic]; //colores disponibles
+                for(uint32_t init = 0; init < chromatic; init++) {
+                        chrome[init] = 0;
                 }
-                for(uint32_t color = 1; color < chromatic+1; color++){
-                  if (flanders[color]!=1){
-                    chrome[m] = color;
-                    m++;
-                  }
+                for(uint32_t color = 1; color < chromatic+1; color++) {
+                        if (flanders[color]!=1) {
+                                chrome[m] = color;
+                                m++;
+                        }
                 }
 
-                if( m != 0){
-                  int range = rueda(x, 0, m-1);
-                  pointer->graph[i][2] = chrome[range];
+                if( m != 0) {
+                        int range = rueda(x, 0, m-1);
+                        pointer->graph[i][2] = chrome[range];
                 } else {
-                  chromatic++;
-                  pointer->graph[i][2] = chromatic; //si no hay colores disponibles
+                        chromatic++;
+                        pointer->graph[i][2] = chromatic; //si no hay colores disponibles
                 }
         }
 
         return chromatic;
 }
+
+void conexas(int i, Grafo_t w, Visitor_t v){
+        GrafoSt_t pointer = *w->GrafoSt;
+        Visitados_t pp = *v->Visitados;
+        pp->visit[i] = 1; //escribe 1 para decir que acaba de ser visitado
+        for(int j = 3; j < (int)pointer->graph[i][1]+3; j++) { //se fija sus vecinos
+                for(int n = 0; n < (int)pointer->v; n++) {
+                        if((pointer->graph[n][0] == pointer->graph[i][j]) && pp->visit[n] == 0) { //si no fue visitado
+                                conexas(n, w, v);
+                        }
+                }
+        }
+}
 //Bipartite coloring
 //coloreo bipartito
 int Bipartito(Grafo_t w){
-
         GrafoSt_t pointer = *w->GrafoSt;
-        uint32_t chromatic = 1;
-        int m,vecinos;
-        uint32_t k;
-        pointer->graph[0][2] = 1;
-        uint32_t array[pointer->v];
-        //memset(array, 0, (pointer->v)*(pointer->v)*sizeof(uint32_t));
-        //for each vertex
-        //por cada vertice
-        for(int i = 1; i < (int)pointer->v; i++) {
-                m = 0;
-                //we look at his neighbours; and for each neighbour
-                //nos fijamos en sus vecinos, y por cada vecino
-                vecinos = (int)pointer->graph[i][1]+3;
-                for(int j = 3; j < vecinos; j++) {
-                        //The colors of the neighbours which are smaller than the vertex
-                        //are added to an array; we look for the neighbour's color
-                        //los colores de los vecinos menores al vertice se agregan a un arreglo
-                        if(pointer->graph[i][j] < pointer->graph[i][0]) {
-                                //We look for the neighbour's color
-                                //busco el color del vecino
-                                for(uint32_t l = 0; l < pointer->v; l++) {
-                                        if(pointer->graph[l][0] == pointer->graph[i][j]) {
-                                                array[m] = pointer->graph[l][2];
-                                                m++;
-                                                break;
-                                        }
-                                }
-                        }
-                }
-                //Here we look for the smallest integer which is not in the array
-                //aca buscamos el menor entero que no esta en el arreglo
-                for(k = 1; k < pointer->v; k++) {
-                        if(!arraysearch(array, pointer->v - 1, k)) {
-                                //if color k it's not there, the new color is k
-                                //si no esta el color k, el nuevo color es k
-                                pointer->graph[i][2] = k;
-                                break;
-                        }
-                        if(k == pointer->v-1) {
-                                pointer->graph[i][2] = k + 1;
-                        }
-                }
-                if(chromatic < k) {
-                        chromatic = k;
-                }
-                if(chromatic > 2) {
-                        return 0;
+        int bi = NotSoGreedy(w, 1234);
+        int result;
+        int k = 1;
+        Visitor_t visitor = calloc(1, sizeof(struct _Visitor_t));
+        Visitados_t v = calloc(1, sizeof(struct _Visitados_t)); //reservo memoria para el arreglo de visitados
+        v->visit = (uint32_t *)calloc(pointer->v, sizeof(uint32_t));
+        for(int i = 0; i < (int)pointer->v; i++) {
+                v->visit[i]=0; //inicializo el arreglo en 0
+        }
+        visitor->Visitados = &v;
+        conexas(0, w, visitor);
+        for(int i = 1; i < (int)pointer->v; i++) { //por cada vertice
+                if(v->visit[i] == 0) {
+                        k++;
+                        conexas(i, w, visitor); //pongo en 1 los que fueron visitados
                 }
         }
-        if(chromatic != 2) {
-                return 0;
+        if(bi != 2) { //si no es bipartito
+                result = k;
         } else {
-                return 1;
+                result = -k; //si lo es
         }
+        free(v);
+        free(visitor);
+        return result;
 }
 //swap de arreglos
 void CambiarDatos(uint32_t **a, uint32_t **b){
@@ -317,22 +300,10 @@ void ReordenManteniendoBloqueColores(Grafo_t w, uint32_t x){
         uint32_t v = NumeroDeVertices(w);
         if(r != 1) {
                 if(x == 0) {
-                        //Ordena r, 1, 2,...,r-1
-                        for(; i < v; i++) {
-                                if(pointer->graph[i][2] == r) {
-                                        CambiarDatos(&pointer->graph[i], &pointer->graph[current]);
-                                        current++;
-                                }
-                        }
-                        //armamos bloques con colores = 1, 2 .. r-1
-                        if((v-current)>2) {
-                                recursive_quick_sort_up(w, current, v-1, 2);
-                        }
-                } else if(x == 1) {
                         if(r > 2) {
                                 recursive_quick_sort_down(w, 0, v-1, 2);
                         }
-                } else if(x == 2) {
+                } else if(x == 1) {
                         uint32_t module[r];
                         //primero ordeno segun el color
                         recursive_quick_sort_up(w, 0, v-1, 2);
@@ -371,45 +342,7 @@ void ReordenManteniendoBloqueColores(Grafo_t w, uint32_t x){
                                 module[i-1] = 0;
                                 i = min(module,r) + 1;
                         }
-                } else if(x == 3) {
-                        uint32_t module[r];
-                        //primero ordeno segun el color
-                        recursive_quick_sort_up(w, 0, v-1, 2);
-                        current = pointer->graph[0][2];
-                        //Guardo en un arreglo la cantidad de vertices por color
-                        //El indice 0 corresponde al vertice 1
-                        c = 1;
-                        uint32_t i = 0;
-                        for(j = 1; j < v; j++) {
-                                if(current != pointer->graph[j][2]) {
-                                        module[i] = c;
-                                        i++;
-                                        current = pointer->graph[j][2];
-                                        c = 1;
-                                        if(j == v-1)
-                                                module[i] = c;
-                                } else {
-                                        c++;
-                                        current = pointer->graph[j][2];
-                                        if(j == v-1)
-                                                module[i] = c;
-                                }
-                        }
-                        //busco el indice del maximo del arreglo
-                        i = max(module, r)+1;
-                        c = 0;
-                        for(uint32_t k = 0; k < r; k++) {
-                                for(j = 0; j < v; j++) {
-                                        if(pointer->graph[j][2]==i) {
-                                                if(j != c) {
-                                                        CambiarDatos(&pointer->graph[c],&pointer->graph[j]);
-                                                }
-                                                c++;
-                                        }
-                                }
-                                module[i-1] = 0;
-                                i = max(module,r) + 1;
-                        }
+
                 } else {
                         c = 0;
                         uint32_t module[r];

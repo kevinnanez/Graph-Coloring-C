@@ -11,6 +11,8 @@
 
 typedef struct _Grafo_t *Grafo_t;
 typedef struct _GrafoSt_t *GrafoSt_t;
+typedef struct _Visitados_t *Visitados_t;
+typedef struct _Visitor_t *Visitor_t;
 typedef uint32_t *u32;
 
 struct _GrafoSt_t {
@@ -24,21 +26,31 @@ struct _Grafo_t {
         GrafoSt_t *GrafoSt;
 };
 
+//Estructura de visitados
+struct _Visitados_t {
+        uint32_t *visit;
+};
+
+//Puntero a la estructura visitados
+struct _Visitor_t {
+        Visitados_t *Visitados;
+};
+
 //Springfield
 Grafo_t ConstruccionDelGrafo(void);
 int DestruccionDelGrafo(Grafo_t g);
 //Quahog
 uint32_t NumeroDeVertices(Grafo_t g);
 uint32_t NumeroDeLados(Grafo_t g);
-uint32_t NumeroVerticesDeColor(Grafo_t g, uint32_t i);
+uint32_t ColorJotaesimoVecino(Grafo_t w, uint32_t i, uint32_t j);
+uint32_t NombreJotaesimoVecino(Grafo_t w, uint32_t i, uint32_t j);
 uint32_t NumeroDeColores(Grafo_t g);
-uint32_t IesimoVerticeEnElOrden(Grafo_t g, uint32_t i);
 uint32_t NombreDelVertice(Grafo_t g, uint32_t x);
 uint32_t ColorDelVertice(Grafo_t g, uint32_t x);
 uint32_t GradoDelVertice(Grafo_t g, uint32_t x);
-uint32_t IesimoVecino(Grafo_t g, uint32_t x, uint32_t i);
 //Shelbyville
 uint32_t NotSoGreedy(Grafo_t g,uint32_t x);
+void conexas(int i, Grafo_t g, Visitor_t v);
 int Bipartito(Grafo_t g);
 void CambiarDatos(uint32_t **a, uint32_t **b);
 void QuickSort(Grafo_t g, uint32_t b);
