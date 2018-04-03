@@ -20,7 +20,11 @@ Grafo_t ConstruccionDelGrafo(){
         int flag = 1;
         bool primero = true;
         uint32_t magic = 4294967295; //magic number para el mayor entero de 32 bits
-        uint32_t x,y,numver,numlad,i,j,found,verticei;
+        uint32_t i,j,found,verticei;
+        uint32_t numver = 0;
+        uint32_t numlad = 0;
+        uint32_t x = 0;
+        uint32_t y = 0;
         uint32_t guardado = 1;
         char line[MAXS] = {0};//Creo un arreglo de 10000 caracteres del numero 0
         archivo = fopen("archivo.col","r");//abro el archivo dimacs

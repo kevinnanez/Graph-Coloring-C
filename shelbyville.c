@@ -114,9 +114,9 @@ void conexas(int i, Grafo_t w, Visitor_t v){
         Visitados_t pp = *v->Visitados;
         pp->visit[i] = 1; //escribe 1 para decir que acaba de ser visitado
         for(int j = 3; j < (int)pointer->graph[i][1]+3; j++) { //se fija sus vecinos
-                for(int n = 0; n < (int)pointer->v; n++) {
+                for(int n = 0; n < (int)pointer->v; n++) { //se fija en sus vertices
                         if((pointer->graph[n][0] == pointer->graph[i][j]) && pp->visit[n] == 0) { //si no fue visitado
-                                conexas(n, w, v);
+                                conexas(n, w, v); //lo visita
                         }
                 }
         }
@@ -128,18 +128,18 @@ int Bipartito(Grafo_t w){
         int bi = NotSoGreedy(w, 1234);
         int result;
         int k = 1;
-        Visitor_t visitor = calloc(1, sizeof(struct _Visitor_t));
-        Visitados_t v = calloc(1, sizeof(struct _Visitados_t)); //reservo memoria para el arreglo de visitados
-        v->visit = (uint32_t *)calloc(pointer->v, sizeof(uint32_t));
+        Visitor_t visitor = calloc(1, sizeof(struct _Visitor_t)); //reservo memoria para un puntero a visitados
+        Visitados_t v = calloc(1, sizeof(struct _Visitados_t)); //reservo memoria para visitados
+        v->visit = (uint32_t *)calloc(pointer->v, sizeof(uint32_t)); //reservo memoria para el arreglo de visitados
         for(int i = 0; i < (int)pointer->v; i++) {
                 v->visit[i]=0; //inicializo el arreglo en 0
         }
         visitor->Visitados = &v;
-        conexas(0, w, visitor);
+        conexas(0, w, visitor); //escribe 1 o "visito" el grafo conexo del primer vertice
         for(int i = 1; i < (int)pointer->v; i++) { //por cada vertice
                 if(v->visit[i] == 0) {
-                        k++;
-                        conexas(i, w, visitor); //pongo en 1 los que fueron visitados
+                        k++; // si uno no fue visitado entonces hay otra componente
+                        conexas(i, w, visitor); //visito el otro componente
                 }
         }
         if(bi != 2) { //si no es bipartito

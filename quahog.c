@@ -19,11 +19,11 @@ uint32_t NumeroDeLados(Grafo_t w){
         GrafoSt_t pointer = *w->GrafoSt;
         return pointer->l;
 }
-uint32_t ColorJotaesimoVecino(Grafo_t w, uint32_t i, uint32_t j){
+uint32_t ColorJotaesimoVecino(Grafo_t w, uint32_t x, uint32_t j){
 
         GrafoSt_t pointer = *w->GrafoSt;
-        uint32_t vecino = pointer->graph[i][j+3];
-        uint32_t color;
+        uint32_t vecino = pointer->graph[x][j+3];
+        uint32_t color = 0;
         for(uint32_t i = 0; i < pointer->v; i++) {
 
                 if(pointer->graph[i][0] == vecino) {
@@ -33,10 +33,10 @@ uint32_t ColorJotaesimoVecino(Grafo_t w, uint32_t i, uint32_t j){
         }
         return color;
 }
-uint32_t NombreJotaesimoVecino(Grafo_t w, uint32_t i, uint32_t j){
+uint32_t NombreJotaesimoVecino(Grafo_t w, uint32_t x, uint32_t j){
 
         GrafoSt_t pointer = *w->GrafoSt;
-        return pointer->graph[i][j+3];
+        return pointer->graph[x][j+3];
 }
 //devuelve la cantidad de colores usados en el coloreo de W
 uint32_t NumeroDeColores(Grafo_t w){
@@ -71,7 +71,7 @@ uint32_t GradoDelVertice(Grafo_t w, uint32_t x){
 uint32_t max ( uint32_t *list, uint32_t r){
         uint32_t i;
         uint32_t j = 0;
-        uint32_t max;
+        uint32_t max = 0;
         for(i = 0; i < r; i++) {
                 if(list[i] != 0) {
                         max = list[i];
@@ -90,7 +90,7 @@ uint32_t max ( uint32_t *list, uint32_t r){
 uint32_t min ( uint32_t *list, uint32_t r){
         uint32_t i;
         uint32_t j = 0;
-        uint32_t min;
+        uint32_t min = 0;
         for(i = 0; i < r; i++) {
                 if(list[i] != 0) {
                         min = list[i];
